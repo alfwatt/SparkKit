@@ -57,7 +57,6 @@
 		75207CB52C6B52070057B0A9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75207BE72C6B44620057B0A9 /* MainMenu.xib */; };
 		75207CB62C6B520C0057B0A9 /* Sparky.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75207BE82C6B44620057B0A9 /* Sparky.xib */; };
 		753C13AE30548406008338B2 /* KitBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; };
-		753C13AF30548406008338B2 /* KitBridge.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		753C13B53054841B008338B2 /* KitBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; };
 		753C13B63054841B008338B2 /* KitBridge.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		753C13B730548423008338B2 /* KitBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; };
@@ -121,17 +120,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		75207B7A2C6AD1E70057B0A9 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				753C13AF30548406008338B2 /* KitBridge.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		756C2D9D1F26B1C80060F718 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -460,7 +448,6 @@
 				75971DEB1D138C0400EA65D3 /* Frameworks */,
 				75971DEC1D138C0400EA65D3 /* Headers */,
 				75971DED1D138C0400EA65D3 /* Resources */,
-				75207B7A2C6AD1E70057B0A9 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
