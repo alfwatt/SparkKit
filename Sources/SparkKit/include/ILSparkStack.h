@@ -1,7 +1,7 @@
-#if SWIFT_PACKAGE
-#import "SparkKit.h"
-#else
+#if __has_include(<SparkKit/SparkKit.h>)
 #import <SparkKit/SparkKit.h>
+#else
+#import "SparkKit.h"
 #endif
 
 // MARK: Hints

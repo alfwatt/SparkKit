@@ -1,13 +1,13 @@
 {
-  "originHash" : "6f0b8924a14bd13d84c56bfcf7e01ef6556a9b618cd2dd8ea4c97c5b98b04e77",
+  "originHash" : "d28a90ee03cd2e9d2b3810c537ba64f424df385a42ab0b6f4def9236dbcf1d9e",
   "pins" : [
     {
       "identity" : "kitbridge",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/iStumblerLabs/KitBridge.git",
+      "location" : "https://github.com/alfwatt/KitBridge.git",
       "state" : {
-        "revision" : "ec9ce2026ee94201783369452db096f324384a2a",
-        "version" : "1.3.2"
+        "revision" : "38fb21233d6b00e353fba453873d35c601d1b083",
+        "version" : "2.3.0"
       }
     }
   ],

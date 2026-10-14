@@ -1,8 +1,8 @@
 #import <QuartzCore/QuartzCore.h>
-#ifdef SWIFT_PACKAGE
-#import "KitBridge.h"
-#else
+#if __has_include(<KitBridge/KitBridge.h>)
 #import <KitBridge/KitBridge.h>
+#else
+@import KitBridge;
 #endif
 
 // MARK: Constants

@@ -9,7 +9,7 @@ let package = Package(
 		.library( name: "SparkKit", targets: ["SparkKit"])
 	],
     dependencies: [
-        .package( url: "https://github.com/iStumblerLabs/KitBridge.git", from: "1.3.2")
+        .package( url: "https://github.com/alfwatt/KitBridge.git", from: "2.3.0")
     ],
     targets: [
         .target( name: "SparkKit", dependencies: ["KitBridge"])

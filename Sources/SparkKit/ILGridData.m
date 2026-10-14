@@ -109,10 +109,9 @@ size_t ILSizeOfGridType(ILGridDataType dataType) {
     size_t typeSize = ILSizeOfGridType(dataType);
     size_t gridSize = (rows * columns * typeSize);
     if (self = [super init]) {
-        self.data = [NSMutableData dataWithCapacity:gridSize];
+        self.data = [NSMutableData dataWithLength:gridSize]; // zero filled, rows are computed from the length
         self.dataType = dataType;
         self.columns = columns;
-        bzero((void*)self.data.bytes, gridSize);
     }
     return self;
 }
@@ -389,7 +388,7 @@ size_t ILSizeOfGridType(ILGridDataType dataType) {
         CGSize rowSize = CGSizeMake(self.columns, 1);
         size_t imageSize = (pixelBits * rowSize.width);
         void* imageData = calloc(1, imageSize);
-        CGContextRef rowContext = CGBitmapContextCreate(imageData, rowSize.width, rowSize.height, pixelBits, imageSize, grayscale, kCGImageAlphaNone);
+        CGContextRef rowContext = CGBitmapContextCreate(imageData, rowSize.width, rowSize.height, pixelBits, imageSize, grayscale, (CGBitmapInfo) kCGImageAlphaNone);
         CGContextSetFillColorSpace(rowContext, grayscale);
 
         NSUInteger thisColumn = 0;
@@ -423,7 +422,7 @@ exit:
         size_t bytesPerRow = (channelCount * gridSize.width);
         size_t imageBytes =  (bytesPerRow * gridSize.height);
         CFMutableDataRef imageData = CFDataCreateMutable(kCFAllocatorDefault, imageBytes);
-        CGContextRef gridContext = CGBitmapContextCreate((void*)CFDataGetMutableBytePtr(imageData), gridSize.width, gridSize.height, bitsPerComponent, bytesPerRow, grayscale, kCGImageAlphaNone);
+        CGContextRef gridContext = CGBitmapContextCreate((void*)CFDataGetMutableBytePtr(imageData), gridSize.width, gridSize.height, bitsPerComponent, bytesPerRow, grayscale, (CGBitmapInfo) kCGImageAlphaNone);
         CGContextSetFillColorSpace(gridContext, grayscale);
 
         NSUInteger thisRow = 0;
@@ -460,7 +459,7 @@ exit:
         size_t bytesPerRow = (channelCount * rowSize.width);
         size_t imageSize = (bytesPerRow * rowSize.height);
         CFMutableDataRef imageData = CFDataCreateMutable(kCFAllocatorDefault, imageSize);
-        CGContextRef maskContext = CGBitmapContextCreate((void*)CFDataGetMutableBytePtr(imageData), rowSize.width, rowSize.height, bitsPerComponent, bytesPerRow, colorSpace, kCGImageAlphaOnly);
+        CGContextRef maskContext = CGBitmapContextCreate((void*)CFDataGetMutableBytePtr(imageData), rowSize.width, rowSize.height, bitsPerComponent, bytesPerRow, colorSpace, (CGBitmapInfo) kCGImageAlphaOnly);
         CGContextSetFillColorSpace(maskContext, colorSpace);
         
         NSUInteger thisColumn = 0;
@@ -494,7 +493,7 @@ exit:
         size_t bytesPerRow = (channelCount * gridSize.width);
         size_t imageSize =  (bytesPerRow * gridSize.height);
         CFMutableDataRef imageData = CFDataCreateMutable(kCFAllocatorDefault, imageSize);
-        CGContextRef maskContext = CGBitmapContextCreate((void*)CFDataGetMutableBytePtr(imageData), gridSize.width, gridSize.height, bitsPerComponent, bytesPerRow, colorSpace, kCGImageAlphaOnly);
+        CGContextRef maskContext = CGBitmapContextCreate((void*)CFDataGetMutableBytePtr(imageData), gridSize.width, gridSize.height, bitsPerComponent, bytesPerRow, colorSpace, (CGBitmapInfo) kCGImageAlphaOnly);
         CGDataProviderRef maskDataProvider = CGDataProviderCreateWithCFData(imageData);
         CGContextSetFillColorSpace(maskContext, colorSpace);
 

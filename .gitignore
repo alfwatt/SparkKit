@@ -2,3 +2,5 @@ xcuserdata
 SparkKit.xcodeproj/xcuserdata/**
 .swiftpm
 /.build
+.DS_Store
+Package.resolved

@@ -1,11 +1,11 @@
-#if SWIFT_PACKAGE
-#import "ILSparkStyle.h"
-#else
+#if __has_include(<SparkKit/SparkKit.h>)
 #import <SparkKit/ILSparkStyle.h>
+#else
+#import "ILSparkStyle.h"
 #endif
 
 /// base class for all SparkKit views
-@interface ILSparkView : ILView <ILViews, ILSparkStyle>
+@interface ILSparkView : ILView <ILViewLifecycle, ILSparkStyle>
 
 // MARK: - ILSparkStyle
 
