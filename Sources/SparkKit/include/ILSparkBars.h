@@ -10,4 +10,7 @@
 @interface ILSparkBars : ILSparkView <ILBucketDataDelegate>
 @property(nonatomic,retain) ILBucketData* dataSource;
 
+/// the space between the bars, in points, each bar is narrower by the gap, defaults to 0
+@property(nonatomic,assign) CGFloat barGap;
+
 @end

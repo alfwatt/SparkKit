@@ -41,7 +41,9 @@
             if (bucketHeight > 0.0) { // draw it, otherwise just skip ahead
                 CGFloat bucketXOffset = insetRect.origin.x + (bucketWidth * bucketIndex);
                 CGFloat bucketYOffset = insetRect.origin.y + (insetRect.size.height - bucketHeight);
-                CGRect bucketRect = CGRectMake(bucketXOffset, bucketYOffset, bucketWidth, bucketHeight);
+                CGFloat gap = MIN(MAX(self.barGap, 0), bucketWidth / 2); // half on each side, so the outer bars line up with the edges
+                CGRect bucketRect = CGRectMake(bucketXOffset + (bucketIndex > 0 ? gap / 2 : 0), bucketYOffset,
+                                               bucketWidth - (bucketIndex > 0 ? gap / 2 : 0) - (bucketIndex < bucketCount - 1 ? gap / 2 : 0), bucketHeight);
                 CAShapeLayer* bucketLayer = [CAShapeLayer new];
                 CGPathRef bucketPath = CGPathCreateWithRect(bucketRect, nil);
                 bucketLayer.path = bucketPath;
