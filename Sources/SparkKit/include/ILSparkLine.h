@@ -5,7 +5,7 @@
 #endif
 
 extern NSString* const ILSparkLineScaleFactor;
-extern NSString* const ILSparkLineFalloffInterval;
+extern NSString* const ILSparkLineFalloffInterval; // seconds between samples which leave a gap in the line
 
 @protocol ILSparkLineDataSource;
 

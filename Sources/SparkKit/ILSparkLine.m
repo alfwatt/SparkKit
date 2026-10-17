@@ -56,7 +56,7 @@ NSString* const ILSparkLineFalloffInterval = @"ILSparkLineFalloffTInterval";
         }
 
         // NSLog(@"line to -> %f,%f", sampleX, sampleY);
-        if (lastDate && (style.falloff > 0) && ((lastPoint.x - thisPoint.x) > style.falloff)) {
+        if (lastDate && (style.falloff > 0) && (fabs([sampleDate timeIntervalSinceDate:lastDate]) > style.falloff)) { // samples further apart than the falloff interval leave a gap
             if (style.filled) {
                 CGPathAddLineToPoint(path, NULL, lastPoint.x, size.height); // drop it to the baseline
                 CGPathMoveToPoint(path, NULL, thisPoint.x, size.height); // move along to the current point
