@@ -32,33 +32,8 @@ open class ILSparkBars: ILSparkView, ILBucketDataDelegate {
         barsLayer.sublayers = nil
 
         if let dataSource {
-            // the bars grow from the edge the style names, from the left or right the buckets run down the view
-            let direction = style.edgeDirection(default: .fromBottom)
-            let bucketCount = dataSource.buckets.count
-            let insetRect = borderInset
-            let bucketWidth = (direction.isHorizontal ? frame.size.height : frame.size.width) / CGFloat(bucketCount)
-
-            if bucketWidth < 1.0 { // we got problems, deal with it later
-                NSLog("invalid bucket width: %f view width: %f bucket count: %lu", bucketWidth, frame.size.width, bucketCount)
-            }
-
-            for bucketIndex in 0..<bucketCount {
-                let bucketValue = dataSource.bucketValue(bucketIndex)
-                guard bucketValue > 0.0 else { continue } // skip empty buckets
-                let gap = min(max(barGap, 0), bucketWidth / 2) // half on each side, so the outer bars line up with the edges
-                let leading = bucketIndex > 0 ? gap / 2 : 0
-                let trailing = bucketIndex < bucketCount - 1 ? gap / 2 : 0
-                let bucketStart = (bucketWidth * CGFloat(bucketIndex)) + leading
-                let slot = direction.isHorizontal
-                    ? CGRect(x: insetRect.minX, y: insetRect.minY + bucketStart, width: insetRect.width, height: bucketWidth - leading - trailing)
-                    : CGRect(x: insetRect.minX + bucketStart, y: insetRect.minY, width: bucketWidth - leading - trailing, height: insetRect.height)
-                let bucketRect = slot.band(from: direction, 0, bucketValue)
-                let bucketLayer = CAShapeLayer()
-                bucketLayer.path = CGPath(rect: bucketRect, transform: nil)
-                bucketLayer.fillColor = style.fill?.cgColor
-                bucketLayer.strokeColor = style.stroke?.cgColor
-                barsLayer.addSublayer(bucketLayer)
-            }
+            let values = (0..<dataSource.buckets.count).map { dataSource.bucketValue($0) }
+            ILSparkBars.addBars(values, to: barsLayer, in: borderInset, viewSize: frame.size, style: style, barGap: barGap)
         }
         else {
             NSLog("no bucket data")
@@ -66,6 +41,33 @@ open class ILSparkBars: ILSparkView, ILBucketDataDelegate {
 
         super.updateView()
         CATransaction.commit()
+    }
+
+    /// a bar for each value between 0 and 1, growing from the edge the style names, the bottom by default,
+    /// from the left or right the bars run down the view
+    static func addBars(_ values: [CGFloat], to barsLayer: CALayer, in insetRect: CGRect, viewSize: CGSize, style: ILSparkStyle, barGap: CGFloat) {
+        let direction = style.edgeDirection(default: .fromBottom)
+        let bucketCount = values.count
+        let bucketWidth = (direction.isHorizontal ? viewSize.height : viewSize.width) / CGFloat(bucketCount) // can be under a point
+
+        // one shape layer for all the bars, a layer for each is slow to update many times a second
+        let barsPath = CGMutablePath()
+        for (bucketIndex, bucketValue) in values.enumerated() {
+            guard bucketValue > 0.0 else { continue } // skip empty buckets
+            let gap = min(max(barGap, 0), bucketWidth / 2) // half on each side, so the outer bars line up with the edges
+            let leading = bucketIndex > 0 ? gap / 2 : 0
+            let trailing = bucketIndex < bucketCount - 1 ? gap / 2 : 0
+            let bucketStart = (bucketWidth * CGFloat(bucketIndex)) + leading
+            let slot = direction.isHorizontal
+                ? CGRect(x: insetRect.minX, y: insetRect.minY + bucketStart, width: insetRect.width, height: bucketWidth - leading - trailing)
+                : CGRect(x: insetRect.minX + bucketStart, y: insetRect.minY, width: bucketWidth - leading - trailing, height: insetRect.height)
+            barsPath.addRect(slot.band(from: direction, 0, min(bucketValue, 1)))
+        }
+        let bucketsLayer = CAShapeLayer()
+        bucketsLayer.path = barsPath
+        bucketsLayer.fillColor = style.fill?.cgColor
+        bucketsLayer.strokeColor = style.stroke?.cgColor
+        barsLayer.addSublayer(bucketsLayer)
     }
 
     // MARK: - ILBucketDataDelegate
