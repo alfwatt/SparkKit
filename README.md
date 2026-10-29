@@ -17,11 +17,16 @@ Visit our [Patreon Page](https://www.patreon.com/istumblerlabs) and patronize us
 
 <a href="https://github.com/alfwatt/KitBridge">KitBridge</a> provides bridging for UIKit and AppKit.
 
-## Headers
+## Using SparkKit
 
-### SparkKit.h
+SparkKit is written in Swift and builds as a framework from `SparkKit.xcodeproj` or as a Swift package:
 
-Umbrella header
+    .package(url: "https://github.com/alfwatt/SparkKit.git", branch: "main")
+
+Then `import SparkKit` in Swift or `@import SparkKit;` in Objective-C.
+The classes keep their `IL` names in the Objective-C runtime, so nibs and storyboards can use them as custom classes.
+
+Style hints are dictionary keys, e.g. `ILSparkMeterStyleHint`, `ILSparkStackColorsHint` and `ILSparkLineScaleFactor`, defined as Swift constants.
 
 ## Classes
 
@@ -39,9 +44,17 @@ Time-sequence line graph
 
 ### ILSparkMeter
 
-Multiple style gauge indicators
+Multiple style gauge indicators: text, vertical, horizontal, square, circle, ring, pie and dial
 
-### ILSparkGrid &amp; ILSparkData
+### ILSparkStack
+
+A meter with a stack of values, in the same styles as ILSparkMeter
+
+### ILSparkBars &amp; ILBucketData
+
+Bar chart of bucketed values, e.g. a histogram
+
+### ILSparkGrid &amp; ILGridData
 
 High performance grid data view and source
 
