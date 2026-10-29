@@ -55,7 +55,7 @@ open class ILSparkStream: ILSparkView, ILStreamDataDelegate {
         let path = CGMutablePath()
         let step = values.count > 1 ? size.width / CGFloat(values.count - 1) : 0
         let points = values.enumerated().map { index, value in
-            CGPoint(x: CGFloat(index) * step, y: size.height * (1 - min(max(value, 0), 1)))
+            CGPoint(x: CGFloat(index) * step, y: size.height * (1 - style.scaled(value)))
         }
         if let first = points.first, let last = points.last {
             if style.filled {
@@ -112,8 +112,11 @@ open class ILSparkStream: ILSparkView, ILStreamDataDelegate {
             case .gridStyle:
                 gridLayer.columns = stream.columns
                 gridLayer.totalRows = stream.count
-                if style.gridScrollSpeed != nil { // placed by time and moving smoothly
-                    gridLayer.drawTimed(stream.newestTimedRecords(stream.count).map { (time: $0.time, percents: stream.percents(of: $0.record)) },
+                if let speed = style.gridScrollSpeed { // placed by time and moving smoothly, only the records which can be on the grid
+                    let along = style.edgeDirection(default: .fromTop).isHorizontal ? bounds.width : bounds.height
+                    let oldest = Date().addingTimeInterval(-(TimeInterval(along / speed) + (recordInterval * 4)))
+                    gridLayer.drawTimed(stream.newestTimedRecords(stream.count).filter { $0.time >= oldest }
+                                            .map { (time: $0.time, percents: stream.percents(of: $0.record)) },
                                         interval: recordInterval)
                 }
                 else {

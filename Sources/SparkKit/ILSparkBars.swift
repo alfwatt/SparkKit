@@ -61,7 +61,7 @@ open class ILSparkBars: ILSparkView, ILBucketDataDelegate {
             let slot = direction.isHorizontal
                 ? CGRect(x: insetRect.minX, y: insetRect.minY + bucketStart, width: insetRect.width, height: bucketWidth - leading - trailing)
                 : CGRect(x: insetRect.minX + bucketStart, y: insetRect.minY, width: bucketWidth - leading - trailing, height: insetRect.height)
-            barsPath.addRect(slot.band(from: direction, 0, min(bucketValue, 1)))
+            barsPath.addRect(slot.band(from: direction, 0, style.scaled(bucketValue)))
         }
         let bucketsLayer = CAShapeLayer()
         bucketsLayer.path = barsPath

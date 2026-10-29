@@ -125,40 +125,35 @@ open class ILGridData: NSObject {
         value(.unichar, atRow: row, column: column, as: UniChar.self)
     }
 
-    /// the value as a fraction of the top of the range, the magnitude of negative values, a float grid without a range has fractions
+    /// the magnitude of the value as a fraction of the range, 0 at its start and 1 at its end, at least 0,
+    /// a float grid without a range has fractions
+    private static func percent(of magnitude: CGFloat, in range: NSRange, fractions: Bool = false) -> CGFloat {
+        guard range.length > 0 else { return fractions ? magnitude : 0 }
+        return max((magnitude - CGFloat(range.location)) / CGFloat(range.length), 0)
+    }
+
+    /// the magnitude of the value as a fraction of the range, 0 at its start and 1 at its end, a float grid without a range has fractions
     @objc(percentOfValueAtRow:column:inRange:)
     public func percentOfValue(atRow row: Int, column: Int, in range: NSRange) -> CGFloat { // TODO negative and floating point ranges
-        let maxValue = CGFloat(range.location + range.length)
         switch dataType {
-        case .byte:
-            return maxValue > 0 ? CGFloat(byte(atRow: row, column: column)) / maxValue : 0
-        case .integer:
-            return maxValue > 0 ? CGFloat(abs(integer(atRow: row, column: column))) / maxValue : 0
-        case .float:
-            let value = abs(float(atRow: row, column: column))
-            return maxValue > 0 ? value / maxValue : value
-        case .unichar:
-            return 0
+        case .byte: return ILGridData.percent(of: CGFloat(byte(atRow: row, column: column)), in: range)
+        case .integer: return ILGridData.percent(of: CGFloat(abs(integer(atRow: row, column: column))), in: range)
+        case .float: return ILGridData.percent(of: abs(float(atRow: row, column: column)), in: range, fractions: true)
+        case .unichar: return 0
         }
     }
 
-    /// the fractions of the top of the range for each value in a row's data, as percentOfValue(atRow:column:in:) computes them
+    /// the fractions of the range for each value in a row's data, as percentOfValue(atRow:column:in:) computes them
     func percents(ofRowData rowData: Data, in range: NSRange) -> [CGFloat] {
-        let maxValue = CGFloat(range.location + range.length)
         let count = min(columns, rowData.count / max(valueSize, 1))
         return rowData.withUnsafeBytes { raw in
             (0..<count).map { column in
                 let offset = column * valueSize
                 switch dataType {
-                case .byte:
-                    return maxValue > 0 ? CGFloat(raw[offset]) / maxValue : 0
-                case .integer:
-                    return maxValue > 0 ? CGFloat(abs(raw.loadUnaligned(fromByteOffset: offset, as: Int.self))) / maxValue : 0
-                case .float:
-                    let value = abs(raw.loadUnaligned(fromByteOffset: offset, as: CGFloat.self))
-                    return maxValue > 0 ? value / maxValue : value
-                case .unichar:
-                    return 0
+                case .byte: return ILGridData.percent(of: CGFloat(raw[offset]), in: range)
+                case .integer: return ILGridData.percent(of: CGFloat(abs(raw.loadUnaligned(fromByteOffset: offset, as: Int.self))), in: range)
+                case .float: return ILGridData.percent(of: abs(raw.loadUnaligned(fromByteOffset: offset, as: CGFloat.self)), in: range, fractions: true)
+                case .unichar: return 0
                 }
             }
         }

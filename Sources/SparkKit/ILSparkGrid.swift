@@ -128,7 +128,7 @@ final class ILSparkGridLayer: CALayer {
         let vertical = direction.isHorizontal // rows from the side are columns
         var pixels = [UInt8](repeating: 0, count: percents.count * 4)
         for (column, percent) in percents.enumerated() {
-            let value = min(max(percent, 0), 1)
+            let value = sparkStyle.scaled(percent)
             let alpha = low.alpha + ((high.alpha - low.alpha) * value)
             func premultiplied(_ from: CGFloat, _ to: CGFloat) -> UInt8 {
                 UInt8(min(max(((from * low.alpha) + (((to * high.alpha) - (from * low.alpha)) * value)) * 255, 0), 255).rounded())

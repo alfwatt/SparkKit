@@ -29,6 +29,12 @@ public let ILFinelineWidth: CGFloat = 0.5
 public let ILPathlineWidth: CGFloat = 1
 public let ILBoldlineWidth: CGFloat = 2
 
+// MARK: - Log Scale
+
+/// style hint, a log scale for values between 0 and 1, the strength of the curve k, each value v is shown as log(1 + k·v) / log(1 + k),
+/// which spreads out the low values and gives a waterfall more contrast, e.g. 10 is gentle and 100 strong, without it values are linear
+public let ILSparkLogScaleHint = "ILSparkLogScaleHint"
+
 // MARK: - Fill Direction
 
 /// style hint, the direction the views fill in, an ILSparkFillDirection, each view has its own default
@@ -155,6 +161,13 @@ open class ILSparkStyle: NSObject, NSCopying {
     /// the hint as a number, which may be an NSNumber or a Swift number
     func numberHint(_ key: String) -> NSNumber? {
         hints[key] as? NSNumber
+    }
+
+    /// the value, between 0 and 1, on the log scale the hint sets, or as it is without one
+    public func scaled(_ value: CGFloat) -> CGFloat {
+        let clamped = min(max(value, 0), 1)
+        guard let strength = numberHint(ILSparkLogScaleHint).map({ CGFloat($0.doubleValue) }), strength > 0 else { return clamped }
+        return log1p(strength * clamped) / log1p(strength)
     }
 
     // MARK: - NSObject
