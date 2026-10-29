@@ -28,38 +28,43 @@ class SparkyController: ILViewController, ILSparkMeterDataSource, ILSparkStackDa
     /// the grid keeps this many rows, newest at the bottom
     private let gridRows = 100
 
-    // MARK: - IBOutlets
+    // MARK: - Spark Views
 
-    @IBOutlet var sparkBars: ILSparkBars!
-    @IBOutlet var sparkLine: ILSparkLine!
-    @IBOutlet var sparkGrid: ILSparkGrid!
+    private let sparkBars = ILSparkBars(frame: .zero)
+    private let sparkLine = ILSparkLine(frame: .zero)
+    private let sparkGrid = ILSparkGrid(frame: .zero)
 
-    // MARK: - Meters
+    /// a meter for each meter style, text, vertical, horizontal, square, circle, ring, pie and dial
+    private let meters = (0..<8).map { _ in ILSparkMeter(frame: .zero) }
 
-    @IBOutlet var sparkText: ILSparkMeter!
-    @IBOutlet var sparkVert: ILSparkMeter!
-    @IBOutlet var sparkHorz: ILSparkMeter!
-    @IBOutlet var sparkSquare: ILSparkMeter!
-    @IBOutlet var sparkCircle: ILSparkMeter!
-    @IBOutlet var sparkRing: ILSparkMeter!
-    @IBOutlet var sparkPie: ILSparkMeter!
-    @IBOutlet var sparkDial: ILSparkMeter!
-
-    // MARK: - Stacks
-
-    @IBOutlet var stackText: ILSparkStack!
-    @IBOutlet var stackVert: ILSparkStack!
-    @IBOutlet var stackHorz: ILSparkStack!
-    @IBOutlet var stackSquare: ILSparkStack!
-    @IBOutlet var stackCircle: ILSparkStack!
-    @IBOutlet var stackRing: ILSparkStack!
-    @IBOutlet var stackPie: ILSparkStack!
-    @IBOutlet var stackDial: ILSparkStack!
-
-    private var meters: [ILSparkMeter] { [sparkText, sparkVert, sparkHorz, sparkSquare, sparkCircle, sparkRing, sparkPie, sparkDial] }
-    private var stacks: [ILSparkStack] { [stackText, stackVert, stackHorz, stackSquare, stackCircle, stackRing, stackPie, stackDial] }
+    /// a stack for each meter style
+    private let stacks = (0..<8).map { _ in ILSparkStack(frame: .zero) }
 
     // MARK: -
+
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("Sparky builds its views in code")
+    }
+
+    /// a view with every spark view in it, laid out when it resizes
+    override func loadView() {
+        #if os(macOS)
+        let view = NSView(frame: NSRect(x: 0, y: 0, width: 720, height: 540))
+        #else
+        let view = UIView(frame: UIScreen.main.bounds)
+        #if os(iOS)
+        view.backgroundColor = .white
+        #endif
+        #endif
+        for sparkView in meters + stacks + [sparkLine, sparkBars, sparkGrid] as [ILSparkView] {
+            view.addSubview(sparkView)
+        }
+        self.view = view
+    }
 
     /// load the view, style each meter and stack in the order of the meter styles and start the data
     func initView() {
@@ -110,16 +115,8 @@ class SparkyController: ILViewController, ILSparkMeterDataSource, ILSparkStackDa
 
     // MARK: - Layout
 
-    /// take the spark views out of the nib's containers and constraints, they're laid out in code to fill the view at any size
+    /// lay out the spark views now and whenever the view resizes
     private func adoptSparkViews() {
-        let sparkViews: [ILSparkView] = meters + stacks + [sparkLine, sparkBars, sparkGrid]
-        sparkViews.forEach { $0.removeFromSuperview() }
-        view.subviews.forEach { $0.removeFromSuperview() } // the containers, with their constraints
-        for sparkView in sparkViews {
-            sparkView.removeConstraints(sparkView.constraints) // their fixed sizes
-            sparkView.translatesAutoresizingMaskIntoConstraints = true
-            view.addSubview(sparkView)
-        }
         sparkViewsAdopted = true
         #if os(macOS)
         view.postsFrameChangedNotifications = true

@@ -28,6 +28,11 @@ The classes keep their `IL` names in the Objective-C runtime, so nibs and storyb
 
 Style hints are dictionary keys, e.g. `ILSparkMeterStyleHint`, `ILSparkStackColorsHint` and `ILSparkLineScaleFactor`, defined as Swift constants.
 
+`ILSparkFillDirectionHint` sets the direction every view fills in, an `ILSparkFillDirection`: `.fromTop`, `.fromBottom`, `.fromLeft` or
+`.fromRight`, and for the square and circle meters and stacks `.inward` from the edges or `.outward` from the center.
+Meters and stacks fill from that edge, bars grow from it, and the newest sample of a line or row of a grid is at it.
+Without the hint each view keeps its own default.
+
 ## Classes
 
 ### ILSparkStyle
@@ -56,7 +61,8 @@ Bar chart of bucketed values, e.g. a histogram
 
 ### ILSparkGrid &amp; ILGridData
 
-High performance grid data view and source
+High performance grid data view and source. The cells are square unless `ILSparkGridRowSizeHint` sizes the rows (0 stretches them to fill),
+the newest row enters from the top or the edge `ILSparkFillDirectionHint` names, and `ILSparkGridEmptyColorHint` colors the grid where there's no data
 
 ## TODO
 

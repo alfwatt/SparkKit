@@ -1,4 +1,3 @@
-/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */
 import Foundation
 import QuartzCore
 import KitBridge
@@ -51,6 +50,8 @@ open class ILSparkStack: ILSparkView {
         var dataOffset: CGFloat = 0
         for (datumIndex, datum) in data.enumerated() {
             var filledPath: ILBezierPath?
+            var maskRect: CGRect?
+            var behind = false // drawn behind the earlier data
             let datumPercentage = CGFloat(datum.doubleValue) / dataTotal
             let fillColor = stackColors.isEmpty ? nil : stackColors[datumIndex % stackColors.count]
 
@@ -63,21 +64,28 @@ open class ILSparkStack: ILSparkView {
                     }
                     stackLayer.addSublayer(ILSparkMeter.textLayers(lines, size: insetRect.size, sparkStyle: sparkStyle))
                 }
-            case .verticalStyle:
-                let indicatorHeight = insetRect.size.height * datumPercentage
-                let indicatorOffset = (insetRect.origin.y + insetRect.size.height) - (dataOffset * insetRect.size.height) - indicatorHeight
-                filledPath = ILBezierPath(rect: CGRect(x: insetRect.origin.x, y: indicatorOffset, width: insetRect.size.width, height: indicatorHeight))
-            case .horizontalStyle:
-                let indicatorWidth = insetRect.size.width * datumPercentage
-                let indicatorOffset = insetRect.origin.x + (insetRect.size.width * dataOffset)
-                filledPath = ILBezierPath(rect: CGRect(x: insetRect.origin.x + indicatorOffset, y: insetRect.origin.y, width: indicatorWidth, height: insetRect.size.height))
+            case .verticalStyle, .horizontalStyle:
+                let direction = sparkStyle.edgeDirection(default: sparkStyle.meterStyle == .verticalStyle ? .fromBottom : .fromLeft)
+                filledPath = ILBezierPath(rect: insetRect.band(from: direction, dataOffset, dataOffset + datumPercentage))
             case .squareStyle, .circleStyle:
-                // concentric bands from the outside in, each covers the rest of the stack and the next is drawn over it,
-                // the band's area is the datum's share of the whole
                 let squareRect = ILRectSquareInRect(insetRect)
-                let side = squareRect.size.width * sqrt(max(1 - dataOffset, 0))
-                let bandRect = squareRect.insetBy(dx: (squareRect.size.width - side) / 2, dy: (squareRect.size.height - side) / 2)
-                filledPath = sparkStyle.meterStyle == .squareStyle ? ILBezierPath(rect: bandRect) : ILBezierPath(ovalIn: bandRect)
+                let shape = { (rect: CGRect) in sparkStyle.meterStyle == .squareStyle ? ILBezierPath(rect: rect) : ILBezierPath(ovalIn: rect) }
+                /// the shape with the fraction of the whole area, centered
+                func centered(_ fraction: CGFloat) -> CGRect {
+                    let side = squareRect.size.width * sqrt(min(max(fraction, 0), 1))
+                    return squareRect.insetBy(dx: (squareRect.size.width - side) / 2, dy: (squareRect.size.height - side) / 2)
+                }
+                // concentric bands, each band's area is the datum's share of the whole
+                switch sparkStyle.fillDirection ?? .inward {
+                case .inward: // the first datum outermost, each band covers the rest of the stack and the next is drawn over it
+                    filledPath = shape(centered(1 - dataOffset))
+                case .outward: // the first datum in the middle, each band is drawn behind the ones inside it
+                    filledPath = shape(centered(dataOffset + datumPercentage))
+                    behind = true
+                case let edge: // stacked from the edge, like levels
+                    filledPath = shape(squareRect)
+                    maskRect = squareRect.band(from: edge, dataOffset, dataOffset + datumPercentage)
+                }
             case .ringStyle:
                 let squareRect = ILRectSquareInRect(insetRect)
                 let radius = (squareRect.size.height / 2) - ILPathlineWidth
@@ -119,7 +127,7 @@ open class ILSparkStack: ILSparkView {
                 let indicatorLayer = CAShapeLayer()
                 indicatorLayer.path = filledPath.sparkPath
                 indicatorLayer.fillColor = fillColor?.cgColor
-                indicatorLayer.zPosition = CGFloat(datumIndex) // later bands over earlier ones
+                indicatorLayer.mask = maskRect.map(ILSparkMeter.maskLayer)
                 if sparkStyle.meterStyle == .dialStyle {
                     indicatorLayer.strokeColor = fillColor?.cgColor
                     indicatorLayer.lineWidth = sparkStyle.dialWidth
@@ -129,7 +137,13 @@ open class ILSparkStack: ILSparkView {
                     indicatorLayer.strokeColor = sparkStyle.stroke?.cgColor
                     indicatorLayer.lineWidth = 0
                 }
-                stackLayer.addSublayer(indicatorLayer)
+                // the order draws the overlapping bands, snapshots ignore the zPosition
+                if behind {
+                    stackLayer.insertSublayer(indicatorLayer, at: 0)
+                }
+                else {
+                    stackLayer.addSublayer(indicatorLayer)
+                }
                 indicatorLayer.frame = stackLayer.bounds
             }
         }
@@ -185,3 +199,5 @@ open class ILSparkStackCell: NSActionCell {
 }
 
 #endif
+
+/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */

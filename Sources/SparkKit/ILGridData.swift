@@ -1,4 +1,3 @@
-/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */
 import Foundation
 import CoreGraphics
 #if os(macOS)
@@ -140,6 +139,28 @@ open class ILGridData: NSObject {
             return maxValue > 0 ? value / maxValue : value
         case .unichar:
             return 0
+        }
+    }
+
+    /// the fractions of the top of the range for each value in a row's data, as percentOfValue(atRow:column:in:) computes them
+    func percents(ofRowData rowData: Data, in range: NSRange) -> [CGFloat] {
+        let maxValue = CGFloat(range.location + range.length)
+        let count = min(columns, rowData.count / max(valueSize, 1))
+        return rowData.withUnsafeBytes { raw in
+            (0..<count).map { column in
+                let offset = column * valueSize
+                switch dataType {
+                case .byte:
+                    return maxValue > 0 ? CGFloat(raw[offset]) / maxValue : 0
+                case .integer:
+                    return maxValue > 0 ? CGFloat(abs(raw.loadUnaligned(fromByteOffset: offset, as: Int.self))) / maxValue : 0
+                case .float:
+                    let value = abs(raw.loadUnaligned(fromByteOffset: offset, as: CGFloat.self))
+                    return maxValue > 0 ? value / maxValue : value
+                case .unichar:
+                    return 0
+                }
+            }
         }
     }
 
@@ -390,3 +411,5 @@ open class ILGridTableDataSource: NSObject, NSTableViewDataSource {
     }
 }
 #endif
+
+/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */

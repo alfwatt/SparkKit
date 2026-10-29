@@ -1,4 +1,3 @@
-/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */
 import Foundation
 import QuartzCore
 import KitBridge
@@ -51,8 +50,12 @@ extension ILSparkStyle {
 open class ILSparkLine: ILSparkView {
 
     @objc open var dataSource: ILSparkLineDataSource?
+    private var seriesLayer: CALayer?
 
-    static func timeSeries(with data: ILSparkLineDataSource?, size: CGSize, style: ILSparkStyle) -> CALayer {
+    /// the series drawn with the newest sample on the right, then turned so the newest sample is at the edge the style names
+    static func timeSeries(with data: ILSparkLineDataSource?, size viewSize: CGSize, style: ILSparkStyle) -> CALayer {
+        let direction = style.edgeDirection(default: .fromRight)
+        let size = direction.isHorizontal ? viewSize : CGSize(width: viewSize.height, height: viewSize.width)
         let seriesLayer = CALayer()
         let startDate = Date()
         let path = CGMutablePath()
@@ -123,8 +126,16 @@ open class ILSparkLine: ILSparkView {
             path.addLine(to: CGPoint(x: firstPoint.x, y: size.height))
         }
 
+        var turn: CGAffineTransform
+        switch direction {
+        case .fromLeft: turn = CGAffineTransform(a: -1, b: 0, c: 0, d: 1, tx: viewSize.width, ty: 0) // mirrored
+        case .fromBottom: turn = CGAffineTransform(a: 0, b: 1, c: 1, d: 0, tx: 0, ty: 0) // time down the view
+        case .fromTop: turn = CGAffineTransform(a: 0, b: -1, c: 1, d: 0, tx: 0, ty: viewSize.height) // time up the view
+        default: turn = .identity
+        }
+
         let pathLayer = CAShapeLayer()
-        pathLayer.path = path
+        pathLayer.path = path.copy(using: &turn)
         pathLayer.strokeColor = style.stroke?.cgColor
         pathLayer.lineWidth = style.width
         pathLayer.fillColor = (style.filled ? style.fill : style.background)?.cgColor
@@ -132,11 +143,11 @@ open class ILSparkLine: ILSparkView {
 
         if falloff > 0 {
             let gapsLayer = CAShapeLayer()
-            gapsLayer.path = gaps
+            gapsLayer.path = gaps.copy(using: &turn)
             gapsLayer.strokeColor = ILColor.gray.cgColor
             gapsLayer.lineWidth = style.width
             gapsLayer.lineDashPattern = [3, 2]
-            gapsLayer.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+            gapsLayer.frame = CGRect(origin: .zero, size: viewSize)
             seriesLayer.addSublayer(gapsLayer)
         }
 
@@ -147,18 +158,15 @@ open class ILSparkLine: ILSparkView {
 
     open override func updateView() {
         CATransaction.begin()
-        CATransaction.setAnimationDuration(0) // TODO use the time between updates
-
-        for layer in sparkLayer.sublayers ?? [] { // remove all sublayers
-            layer.removeFromSuperlayer()
-        }
+        CATransaction.setDisableActions(true) // a new series each update
 
         super.updateView()
 
         let insetRect = borderInset
         let sparkLine = ILSparkLine.timeSeries(with: dataSource, size: insetRect.size, style: style)
-        sparkLayer.addSublayer(sparkLine)
+        replaceContent(seriesLayer, with: sparkLine)
         sparkLine.frame = insetRect
+        seriesLayer = sparkLine
         CATransaction.commit()
     }
 }
@@ -185,3 +193,5 @@ open class ILSparkLineCell: NSCell {
 }
 
 #endif
+
+/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */

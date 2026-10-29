@@ -21,29 +21,30 @@ class SparkyDelegate: ILResponder, ILApplicationDelegate {
         let defaultStyle = ILSparkStyle.defaultStyle
         defaultStyle.bordered = true
         defaultStyle.filled = true
-        defaultStyle.width = 1
+        defaultStyle.width = 2
         defaultStyle.addHints([ILSparkLineFalloffInterval: 30.0])
 
+        let viewController = SparkyController()
         #if os(macOS)
-        let viewController = SparkyController(nibName: "Sparky", bundle: .main)
+        // most of the screen, it can be resized from small to full screen
+        let window = NSWindow(contentViewController: viewController)
+        window.title = "Sparky"
+        window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
+        window.isReleasedWhenClosed = false
+        window.contentMinSize = NSSize(width: 320, height: 240)
+        if let screen = NSScreen.main {
+            let visible = screen.visibleFrame
+            window.setFrame(visible.insetBy(dx: (visible.width * 0.1).rounded(), dy: (visible.height * 0.1).rounded()), display: false)
+        }
+        addColorWell(to: window)
+        window.makeKeyAndOrderFront(nil)
         #else
-        let viewController = ILStoryboard(name: "Sparky", bundle: nil).instantiateInitialViewController() as! SparkyController
-        self.window = window
         window?.rootViewController = viewController
         window?.makeKeyAndVisible()
         #endif
+        self.window = window
         self.viewController = viewController
         viewController.initView()
-
-        #if os(macOS)
-        // most of the screen, it can be resized from small to full screen
-        if let window = viewController.view.window, let screen = window.screen ?? NSScreen.main {
-            let visible = screen.visibleFrame
-            window.contentMinSize = NSSize(width: 320, height: 240)
-            window.setFrame(visible.insetBy(dx: (visible.width * 0.1).rounded(), dy: (visible.height * 0.1).rounded()), display: true)
-            addColorWell(to: window)
-        }
-        #endif
 
         updateTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             self?.viewController?.updateView()
@@ -73,8 +74,51 @@ class SparkyDelegate: ILResponder, ILApplicationDelegate {
         viewController?.apply(sender.color)
     }
 
+    /// the app and window menus
+    private static func mainMenu() -> NSMenu {
+        let appName = ProcessInfo.processInfo.processName
+        let appMenu = NSMenu(title: appName)
+        appMenu.addItem(withTitle: "About \(appName)", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        appMenu.addItem(.separator())
+        appMenu.addItem(withTitle: "Hide \(appName)", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        appMenu.addItem(withTitle: "Hide Others", action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h")
+            .keyEquivalentModifierMask = [.command, .option]
+        appMenu.addItem(withTitle: "Show All", action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: "")
+        appMenu.addItem(.separator())
+        appMenu.addItem(withTitle: "Quit \(appName)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+
+        let windowMenu = NSMenu(title: "Window")
+        windowMenu.addItem(withTitle: "Minimize", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
+        windowMenu.addItem(withTitle: "Zoom", action: #selector(NSWindow.performZoom(_:)), keyEquivalent: "")
+        windowMenu.addItem(withTitle: "Enter Full Screen", action: #selector(NSWindow.toggleFullScreen(_:)), keyEquivalent: "f")
+            .keyEquivalentModifierMask = [.command, .control]
+        windowMenu.addItem(.separator())
+        windowMenu.addItem(withTitle: "Close", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+
+        let mainMenu = NSMenu()
+        for menu in [appMenu, windowMenu] {
+            mainMenu.addItem(withTitle: menu.title, action: nil, keyEquivalent: "").submenu = menu
+        }
+        NSApplication.shared.windowsMenu = windowMenu
+        return mainMenu
+    }
+
+    /// there's no main nib, the app gets its delegate and menus here
+    static func main() {
+        let application = NSApplication.shared
+        let delegate = SparkyDelegate()
+        application.delegate = delegate
+        application.mainMenu = mainMenu()
+        application.run()
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         start(in: nil)
+        NSApplication.shared.activate(ignoringOtherApps: true)
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        true
     }
     #else
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {

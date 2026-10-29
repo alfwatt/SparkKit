@@ -1,4 +1,3 @@
-/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */
 import Foundation
 import QuartzCore
 import CoreText
@@ -25,18 +24,8 @@ public let ILSparkMeterRingWidthHint = "ILSparkMeterRingWidthHint" // defaults t
 public let ILSparkMeterDefaultDialWidth: CGFloat = 4
 public let ILSparkMeterDefaultRingWidth: CGFloat = 8
 
-/// Vertical and Horizontal Drawing Direction Hint, an ILSparkMeterFillDirection
-public let ILSparkMeterFillDirectionHint = "ILSparkMeterFillDirectionHint"
-
 /// Drawing Style Hint, an ILSparkMeterStyle
 public let ILSparkMeterStyleHint = "ILSparkMeterStyleHint"
-
-@objc public enum ILSparkMeterFillDirection: Int {
-    case naturalFill // Use system text direction
-    case leftToRightFill // Fixed Left to Right or Clockwise
-    case rightToLeftFill // Fixed Right to Left or Anti-Clockwise
-    case flippedFill // Reverse of System Text Direction
-}
 
 /// drawing style of the level indicator
 @objc public enum ILSparkMeterStyle: Int {
@@ -144,28 +133,42 @@ open class ILSparkMeter: ILSparkView {
         return container
     }
 
+    /// a mask which shows the rect
+    static func maskLayer(_ rect: CGRect) -> CALayer {
+        let mask = CALayer()
+        mask.frame = rect
+        mask.backgroundColor = ILColor.black.cgColor
+        return mask
+    }
+
     static func sparkMeter(datum: CGFloat, size: CGSize, sparkStyle: ILSparkStyle) -> CALayer {
         let insetRect = CGRect(origin: .zero, size: size)
         let filledPath: ILBezierPath
+        var fillRule = CAShapeLayerFillRule.nonZero
+        var maskRect: CGRect?
 
         switch sparkStyle.meterStyle {
         case .textStyle:
             return textLayers([(percentString(datum), sparkStyle.fill)], size: insetRect.size, sparkStyle: sparkStyle)
-        case .verticalStyle:
-            let indicatorPosition = insetRect.size.height - (insetRect.size.height * datum)
-            filledPath = ILBezierPath(rect: CGRect(x: insetRect.origin.x, y: insetRect.origin.y + indicatorPosition,
-                                                   width: insetRect.size.width, height: insetRect.size.height - indicatorPosition))
-        case .horizontalStyle:
-            filledPath = ILBezierPath(rect: CGRect(x: insetRect.origin.x, y: insetRect.origin.y,
-                                                   width: insetRect.size.width * datum, height: insetRect.size.height))
-        case .squareStyle:
+        case .verticalStyle, .horizontalStyle:
+            let direction = sparkStyle.edgeDirection(default: sparkStyle.meterStyle == .verticalStyle ? .fromBottom : .fromLeft)
+            filledPath = ILBezierPath(rect: insetRect.band(from: direction, 0, datum))
+        case .squareStyle, .circleStyle:
             let squareRect = ILRectSquareInRect(insetRect)
-            let indicatorInset = (squareRect.size.width - (squareRect.size.width * datum)) / 2 // ??? take the square root?
-            filledPath = ILBezierPath(rect: squareRect.insetBy(dx: indicatorInset, dy: indicatorInset))
-        case .circleStyle:
-            let squareRect = ILRectSquareInRect(insetRect)
-            let indicatorInset = (squareRect.size.width - (squareRect.size.width * datum)) / 2 // ??? equal area?
-            filledPath = ILBezierPath(ovalIn: squareRect.insetBy(dx: indicatorInset, dy: indicatorInset))
+            let shape = { (rect: CGRect) in sparkStyle.meterStyle == .squareStyle ? ILBezierPath(rect: rect) : ILBezierPath(ovalIn: rect) }
+            switch sparkStyle.fillDirection ?? .outward {
+            case .outward: // grows from the center
+                let inset = (squareRect.size.width - (squareRect.size.width * datum)) / 2
+                filledPath = shape(squareRect.insetBy(dx: inset, dy: inset))
+            case .inward: // the hole in the middle closes
+                let inset = (squareRect.size.width * datum) / 2
+                filledPath = shape(squareRect)
+                filledPath.append(shape(squareRect.insetBy(dx: inset, dy: inset)))
+                fillRule = .evenOdd
+            case let edge: // fills from the edge, like a level
+                filledPath = shape(squareRect)
+                maskRect = squareRect.band(from: edge, 0, datum)
+            }
         case .ringStyle:
             let squareRect = ILRectSquareInRect(insetRect)
             let radius = (squareRect.size.height / 2) - ILPathlineWidth
@@ -201,6 +204,8 @@ open class ILSparkMeter: ILSparkView {
 
         let indicatorLayer = CAShapeLayer()
         indicatorLayer.path = filledPath.sparkPath
+        indicatorLayer.fillRule = fillRule
+        indicatorLayer.mask = maskRect.map(ILSparkMeter.maskLayer)
         indicatorLayer.fillColor = sparkStyle.fill?.cgColor
         if sparkStyle.meterStyle == .dialStyle {
             indicatorLayer.strokeColor = sparkStyle.fill?.cgColor
@@ -248,10 +253,6 @@ extension ILSparkStyle {
         numberHint(ILSparkMeterStyleHint).flatMap { ILSparkMeterStyle(rawValue: $0.intValue) } ?? .horizontalStyle
     }
 
-    @objc public var fillDirection: ILSparkMeterFillDirection {
-        numberHint(ILSparkMeterFillDirectionHint).flatMap { ILSparkMeterFillDirection(rawValue: $0.intValue) } ?? .naturalFill
-    }
-
     @objc public var minAngle: CGFloat {
         numberHint(ILSparkMeterMinAngleHint).map { CGFloat($0.doubleValue) } ?? 0.0
     }
@@ -295,3 +296,5 @@ open class ILSparkMeterCell: NSActionCell {
 }
 
 #endif
+
+/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */

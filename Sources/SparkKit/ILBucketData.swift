@@ -1,4 +1,3 @@
-/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */
 import Foundation
 import CoreGraphics
 
@@ -28,3 +27,5 @@ open class ILBucketData: NSObject {
 @objc public protocol ILBucketDataDelegate: NSObjectProtocol {
     @objc optional func bucketDataDidUpdate(_ data: ILBucketData)
 }
+
+/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */

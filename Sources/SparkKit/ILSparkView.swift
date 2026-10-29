@@ -1,4 +1,3 @@
-/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */
 import Foundation
 import QuartzCore
 import KitBridge
@@ -27,7 +26,8 @@ var ILMainScreenScale: CGFloat {
 @objc(ILSparkView)
 open class ILSparkView: ILView, ILViewLifecycle {
     private var styleStorage: ILSparkStyle?
-    private var borderStorage: CAShapeLayer?
+    private var borderStorage: CAShapeLayer? // the outline, over the content
+    private var backgroundStorage: CAShapeLayer? // the background in the outline, behind the content
     private let labelLayer = CALayer()
     private var labelsNeedUpdate = false
 
@@ -48,17 +48,41 @@ open class ILSparkView: ILView, ILViewLifecycle {
         #endif
     }
 
-    /// border layer
+    /// the path of the border, inset so the whole stroke is in the view
+    private var borderPath: CGPath {
+        let inset = style.width / 2
+        return isCircular ? CGPath(ellipseIn: ILRectSquareInRect(bounds).insetBy(dx: inset, dy: inset), transform: nil)
+                          : CGPath(rect: bounds.insetBy(dx: inset, dy: inset), transform: nil)
+    }
+
+    /// border layer, the outline drawn over the content
     @objc open var border: CAShapeLayer {
         if let borderStorage {
             return borderStorage
         }
-        let inset = style.width / 2
         let border = CAShapeLayer()
-        border.path = isCircular ? CGPath(ellipseIn: ILRectSquareInRect(bounds).insetBy(dx: inset, dy: inset), transform: nil)
-                                 : CGPath(rect: bounds.insetBy(dx: inset, dy: inset), transform: nil)
+        border.path = borderPath
         borderStorage = border
         return border
+    }
+
+    /// the background inside the border, behind the content
+    private var borderBackground: CAShapeLayer {
+        if let backgroundStorage {
+            return backgroundStorage
+        }
+        let background = CAShapeLayer()
+        background.path = borderPath
+        backgroundStorage = background
+        return background
+    }
+
+    /// drop the border layers, they're redrawn at the new size
+    private func resetBorder() {
+        borderStorage?.removeFromSuperlayer()
+        borderStorage = nil
+        backgroundStorage?.removeFromSuperlayer()
+        backgroundStorage = nil
     }
 
     /// is the border circular?
@@ -136,8 +160,7 @@ open class ILSparkView: ILView, ILViewLifecycle {
     open override func setFrameSize(_ newSize: NSSize) {
         super.setFrameSize(newSize)
         guard layer != nil else { return } // not yet initialized
-        borderStorage?.removeFromSuperlayer() // redrawn at the new size
-        borderStorage = nil
+        resetBorder()
         labelsNeedUpdate = true
         updateView()
     }
@@ -152,8 +175,7 @@ open class ILSparkView: ILView, ILViewLifecycle {
         super.layoutSubviews()
         guard bounds.size != laidOutSize else { return }
         laidOutSize = bounds.size
-        borderStorage?.removeFromSuperlayer() // redrawn at the new size
-        borderStorage = nil
+        resetBorder()
         labelsNeedUpdate = true
         updateView()
     }
@@ -182,29 +204,45 @@ open class ILSparkView: ILView, ILViewLifecycle {
             labelsNeedUpdate = false
         }
 
-        // update the border layer
+        // the background behind the content and the outline over it, in order because snapshots ignore the zPosition
         if style.bordered {
+            let backgroundLayer = borderBackground
+            backgroundLayer.fillColor = style.background?.cgColor
+            backgroundLayer.zPosition = -1
+            if backgroundLayer.superlayer !== sparkLayer {
+                sparkLayer.insertSublayer(backgroundLayer, at: 0)
+            }
+
             let borderLayer = border
-            borderLayer.fillColor = style.background?.cgColor
+            borderLayer.fillColor = nil
             borderLayer.lineWidth = style.width
             borderLayer.strokeColor = style.border?.cgColor
-            borderLayer.zPosition = -1
-            if !(sparkLayer.sublayers ?? []).contains(borderLayer) {
-                sparkLayer.insertSublayer(borderLayer, at: 0) // behind the content, snapshots ignore the zPosition
+            borderLayer.zPosition = 0.5 // over the content, under the labels
+            if borderLayer.superlayer !== sparkLayer {
+                sparkLayer.insertSublayer(borderLayer, below: labelLayer)
             }
+        }
+        else {
+            resetBorder()
         }
 
         CATransaction.commit()
     }
 
+    /// add a content layer over the background, under the outline and labels
+    func addContent(_ contentLayer: CALayer) {
+        let above = borderStorage.flatMap { $0.superlayer === sparkLayer ? $0 : nil } ?? labelLayer
+        sparkLayer.insertSublayer(contentLayer, below: above)
+    }
+
     /// replace the old content layer with the new one, keeping the border and labels, without animating
     func replaceContent(_ oldLayer: CALayer?, with newLayer: CALayer) {
         newLayer.frame = bounds
-        if let oldLayer, oldLayer.superlayer == sparkLayer {
+        if let oldLayer, oldLayer.superlayer === sparkLayer {
             sparkLayer.replaceSublayer(oldLayer, with: newLayer)
         }
         else {
-            sparkLayer.addSublayer(newLayer)
+            addContent(newLayer)
         }
     }
 
@@ -338,3 +376,5 @@ open class ILSparkView: ILView, ILViewLifecycle {
         }
     }
 }
+
+/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */

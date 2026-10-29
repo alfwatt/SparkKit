@@ -1,4 +1,3 @@
-/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */
 import Foundation
 import QuartzCore
 import KitBridge
@@ -29,6 +28,39 @@ public let ILHairlineWidth: CGFloat = 0.25
 public let ILFinelineWidth: CGFloat = 0.5
 public let ILPathlineWidth: CGFloat = 1
 public let ILBoldlineWidth: CGFloat = 2
+
+// MARK: - Fill Direction
+
+/// style hint, the direction the views fill in, an ILSparkFillDirection, each view has its own default
+public let ILSparkFillDirectionHint = "ILSparkFillDirectionHint"
+
+/// the direction a view fills in: from an edge, or for square and circle styles inward from the edges or outward from the center
+@objc public enum ILSparkFillDirection: Int {
+    case fromTop
+    case fromBottom
+    case fromLeft
+    case fromRight
+    case inward
+    case outward
+
+    /// from the left or right, the values run along the y axis
+    var isHorizontal: Bool { self == .fromLeft || self == .fromRight }
+
+    /// from one of the edges
+    var isEdge: Bool { self != .inward && self != .outward }
+}
+
+extension CGRect {
+    /// the band of the rect between the fractions of its length, measured from the edge the direction names
+    func band(from direction: ILSparkFillDirection, _ start: CGFloat, _ end: CGFloat) -> CGRect {
+        switch direction {
+        case .fromTop, .inward, .outward: return CGRect(x: minX, y: minY + (height * start), width: width, height: height * (end - start))
+        case .fromBottom: return CGRect(x: minX, y: maxY - (height * end), width: width, height: height * (end - start))
+        case .fromLeft: return CGRect(x: minX + (width * start), y: minY, width: width * (end - start), height: height)
+        case .fromRight: return CGRect(x: maxX - (width * end), y: minY, width: width * (end - start), height: height)
+        }
+    }
+}
 
 // MARK: -
 
@@ -110,6 +142,16 @@ open class ILSparkStyle: NSObject, NSCopying {
         return copy
     }
 
+    /// the direction hint, nil if there's none and the view uses its default
+    public var fillDirection: ILSparkFillDirection? {
+        numberHint(ILSparkFillDirectionHint).flatMap { ILSparkFillDirection(rawValue: $0.intValue) }
+    }
+
+    /// the direction hint if it's an edge, otherwise the view's default
+    func edgeDirection(default defaultDirection: ILSparkFillDirection) -> ILSparkFillDirection {
+        fillDirection.flatMap { $0.isEdge ? $0 : nil } ?? defaultDirection
+    }
+
     /// the hint as a number, which may be an NSNumber or a Swift number
     func numberHint(_ key: String) -> NSNumber? {
         hints[key] as? NSNumber
@@ -141,3 +183,5 @@ open class ILSparkStyle: NSObject, NSCopying {
         return style
     }
 }
+
+/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */

@@ -40,11 +40,6 @@
 		75207C9A2C6B4C9D0057B0A9 /* ILBucketData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75207BC52C6B44620057B0A9 /* ILBucketData.swift */; };
 		75207C9B2C6B4C9D0057B0A9 /* ILSparkLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75207BC92C6B44620057B0A9 /* ILSparkLine.swift */; };
 		75207C9C2C6B4C9D0057B0A9 /* ILSparkStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75207BCB2C6B44620057B0A9 /* ILSparkStack.swift */; };
-		75207CB12C6B51F50057B0A9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75207BE02C6B44620057B0A9 /* Assets.xcassets */; };
-		75207CB22C6B51FC0057B0A9 /* MainMenu.strings in Resources */ = {isa = PBXBuildFile; fileRef = 75207BE32C6B44620057B0A9 /* MainMenu.strings */; };
-		75207CB32C6B51FC0057B0A9 /* MainMenu.strings in Resources */ = {isa = PBXBuildFile; fileRef = 75207BE52C6B44620057B0A9 /* MainMenu.strings */; };
-		75207CB52C6B52070057B0A9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75207BE72C6B44620057B0A9 /* MainMenu.xib */; };
-		75207CB62C6B520C0057B0A9 /* Sparky.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75207BE82C6B44620057B0A9 /* Sparky.xib */; };
 		753C13AE30548406008338B2 /* KitBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; };
 		753C13B53054841B008338B2 /* KitBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; };
 		753C13B63054841B008338B2 /* KitBridge.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -54,20 +49,6 @@
 		753C13BA3054842A008338B2 /* KitBridge.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		75F5A91B1D19034900A17804 /* SparkKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75971DEF1D138C0400EA65D3 /* SparkKit.framework */; };
 		75F5A91D1D19035900A17804 /* SparkKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 75971DEF1D138C0400EA65D3 /* SparkKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		A20000010000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75207BD12C6B44620057B0A9 /* Assets.xcassets */; };
-		A20000010000000000000002 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75207BD42C6B44620057B0A9 /* LaunchScreen.storyboard */; };
-		A20000010000000000000003 /* LaunchScreen.strings in Resources */ = {isa = PBXBuildFile; fileRef = 75207BD62C6B44620057B0A9 /* LaunchScreen.strings */; };
-		A20000010000000000000004 /* LaunchScreen.strings in Resources */ = {isa = PBXBuildFile; fileRef = 75207BD82C6B44620057B0A9 /* LaunchScreen.strings */; };
-		A20000010000000000000005 /* Sparky.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75207BDA2C6B44620057B0A9 /* Sparky.storyboard */; };
-		A20000010000000000000006 /* Sparky.strings in Resources */ = {isa = PBXBuildFile; fileRef = 75207BDC2C6B44620057B0A9 /* Sparky.strings */; };
-		A20000010000000000000007 /* Sparky.strings in Resources */ = {isa = PBXBuildFile; fileRef = 75207BDE2C6B44620057B0A9 /* Sparky.strings */; };
-		A20000010000000000000008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75207BEA2C6B44620057B0A9 /* Assets.xcassets */; };
-		A20000010000000000000009 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75207BED2C6B44620057B0A9 /* Main.storyboard */; };
-		A2000001000000000000000A /* Main.strings in Resources */ = {isa = PBXBuildFile; fileRef = 75207BEF2C6B44620057B0A9 /* Main.strings */; };
-		A2000001000000000000000B /* Main.strings in Resources */ = {isa = PBXBuildFile; fileRef = 75207BF12C6B44620057B0A9 /* Main.strings */; };
-		A2000001000000000000000C /* Sparky.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75207BF32C6B44620057B0A9 /* Sparky.storyboard */; };
-		A2000001000000000000000D /* Sparky.strings in Resources */ = {isa = PBXBuildFile; fileRef = 75207BF52C6B44620057B0A9 /* Sparky.strings */; };
-		A2000001000000000000000E /* Sparky.strings in Resources */ = {isa = PBXBuildFile; fileRef = 75207BF72C6B44620057B0A9 /* Sparky.strings */; };
 		A2000001000000000000000F /* SparkKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75971DEF1D138C0400EA65D3 /* SparkKit.framework */; };
 		A20000010000000000000010 /* SparkKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75971DEF1D138C0400EA65D3 /* SparkKit.framework */; };
 		A20000010000000000000011 /* SparkKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 75971DEF1D138C0400EA65D3 /* SparkKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -189,29 +170,9 @@
 		75207BCD2C6B44620057B0A9 /* ILSparkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILSparkView.swift; sourceTree = "<group>"; };
 		75207BCE2C6B44620057B0A9 /* ILStreamData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILStreamData.swift; sourceTree = "<group>"; };
 		75207BCF2C6B44620057B0A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		75207BD12C6B44620057B0A9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		75207BD22C6B44620057B0A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		75207BD32C6B44620057B0A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		75207BD52C6B44620057B0A9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		75207BD72C6B44620057B0A9 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		75207BD92C6B44620057B0A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Sparky.storyboard; sourceTree = "<group>"; };
-		75207BDB2C6B44620057B0A9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Sparky.strings; sourceTree = "<group>"; };
-		75207BDD2C6B44620057B0A9 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Sparky.strings; sourceTree = "<group>"; };
-		75207BE02C6B44620057B0A9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		75207BE12C6B44620057B0A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		75207BE22C6B44620057B0A9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/MainMenu.strings; sourceTree = "<group>"; };
-		75207BE42C6B44620057B0A9 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/MainMenu.strings; sourceTree = "<group>"; };
-		75207BE62C6B44620057B0A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		75207BE82C6B44620057B0A9 /* Sparky.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Sparky.xib; sourceTree = "<group>"; };
-		75207BEA2C6B44620057B0A9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		75207BEB2C6B44620057B0A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		75207BEC2C6B44620057B0A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		75207BEE2C6B44620057B0A9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
-		75207BF02C6B44620057B0A9 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
-		75207BF22C6B44620057B0A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Sparky.storyboard; sourceTree = "<group>"; };
-		75207BF42C6B44620057B0A9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Sparky.strings; sourceTree = "<group>"; };
-		75207BF62C6B44620057B0A9 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Sparky.strings; sourceTree = "<group>"; };
-		75207BF92C6B44620057B0A9 /* sparky-screenshot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sparky-screenshot.png"; sourceTree = "<group>"; };
 		75207BFB2C6B44620057B0A9 /* SparkyController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkyController.swift; sourceTree = "<group>"; };
 		75207BFD2C6B44620057B0A9 /* SparkyDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkyDelegate.swift; sourceTree = "<group>"; };
 		75543AF01F22A1E70050BAF2 /* Sparky TV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sparky TV.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -284,14 +245,7 @@
 		75207BDF2C6B44620057B0A9 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				75207BD12C6B44620057B0A9 /* Assets.xcassets */,
 				75207BD22C6B44620057B0A9 /* Info.plist */,
-				75207BD42C6B44620057B0A9 /* LaunchScreen.storyboard */,
-				75207BD62C6B44620057B0A9 /* LaunchScreen.strings */,
-				75207BD82C6B44620057B0A9 /* LaunchScreen.strings */,
-				75207BDA2C6B44620057B0A9 /* Sparky.storyboard */,
-				75207BDC2C6B44620057B0A9 /* Sparky.strings */,
-				75207BDE2C6B44620057B0A9 /* Sparky.strings */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -299,12 +253,7 @@
 		75207BE92C6B44620057B0A9 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
-				75207BE02C6B44620057B0A9 /* Assets.xcassets */,
 				75207BE12C6B44620057B0A9 /* Info.plist */,
-				75207BE32C6B44620057B0A9 /* MainMenu.strings */,
-				75207BE52C6B44620057B0A9 /* MainMenu.strings */,
-				75207BE72C6B44620057B0A9 /* MainMenu.xib */,
-				75207BE82C6B44620057B0A9 /* Sparky.xib */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -312,14 +261,7 @@
 		75207BF82C6B44620057B0A9 /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
-				75207BEA2C6B44620057B0A9 /* Assets.xcassets */,
 				75207BEB2C6B44620057B0A9 /* Info.plist */,
-				75207BED2C6B44620057B0A9 /* Main.storyboard */,
-				75207BEF2C6B44620057B0A9 /* Main.strings */,
-				75207BF12C6B44620057B0A9 /* Main.strings */,
-				75207BF32C6B44620057B0A9 /* Sparky.storyboard */,
-				75207BF52C6B44620057B0A9 /* Sparky.strings */,
-				75207BF72C6B44620057B0A9 /* Sparky.strings */,
 			);
 			path = tvOS;
 			sourceTree = "<group>";
@@ -330,7 +272,6 @@
 				75207BDF2C6B44620057B0A9 /* iOS */,
 				75207BE92C6B44620057B0A9 /* macOS */,
 				75207BF82C6B44620057B0A9 /* tvOS */,
-				75207BF92C6B44620057B0A9 /* sparky-screenshot.png */,
 				75207BFB2C6B44620057B0A9 /* SparkyController.swift */,
 				75207BFD2C6B44620057B0A9 /* SparkyDelegate.swift */,
 			);
@@ -547,13 +488,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A20000010000000000000008 /* Assets.xcassets in Resources */,
-				A20000010000000000000009 /* Main.storyboard in Resources */,
-				A2000001000000000000000A /* Main.strings in Resources */,
-				A2000001000000000000000B /* Main.strings in Resources */,
-				A2000001000000000000000C /* Sparky.storyboard in Resources */,
-				A2000001000000000000000D /* Sparky.strings in Resources */,
-				A2000001000000000000000E /* Sparky.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -568,11 +502,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				75207CB22C6B51FC0057B0A9 /* MainMenu.strings in Resources */,
-				75207CB32C6B51FC0057B0A9 /* MainMenu.strings in Resources */,
-				75207CB12C6B51F50057B0A9 /* Assets.xcassets in Resources */,
-				75207CB62C6B520C0057B0A9 /* Sparky.xib in Resources */,
-				75207CB52C6B52070057B0A9 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -580,13 +509,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A20000010000000000000001 /* Assets.xcassets in Resources */,
-				A20000010000000000000002 /* LaunchScreen.storyboard in Resources */,
-				A20000010000000000000003 /* LaunchScreen.strings in Resources */,
-				A20000010000000000000004 /* LaunchScreen.strings in Resources */,
-				A20000010000000000000005 /* Sparky.storyboard in Resources */,
-				A20000010000000000000006 /* Sparky.strings in Resources */,
-				A20000010000000000000007 /* Sparky.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -677,129 +599,6 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		75207BD42C6B44620057B0A9 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BD32C6B44620057B0A9 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-		75207BD62C6B44620057B0A9 /* LaunchScreen.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BD52C6B44620057B0A9 /* en */,
-			);
-			name = LaunchScreen.strings;
-			sourceTree = "<group>";
-		};
-		75207BD82C6B44620057B0A9 /* LaunchScreen.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BD72C6B44620057B0A9 /* es */,
-			);
-			name = LaunchScreen.strings;
-			sourceTree = "<group>";
-		};
-		75207BDA2C6B44620057B0A9 /* Sparky.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BD92C6B44620057B0A9 /* Base */,
-			);
-			name = Sparky.storyboard;
-			sourceTree = "<group>";
-		};
-		75207BDC2C6B44620057B0A9 /* Sparky.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BDB2C6B44620057B0A9 /* en */,
-			);
-			name = Sparky.strings;
-			sourceTree = "<group>";
-		};
-		75207BDE2C6B44620057B0A9 /* Sparky.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BDD2C6B44620057B0A9 /* es */,
-			);
-			name = Sparky.strings;
-			sourceTree = "<group>";
-		};
-		75207BE32C6B44620057B0A9 /* MainMenu.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BE22C6B44620057B0A9 /* en */,
-			);
-			name = MainMenu.strings;
-			sourceTree = "<group>";
-		};
-		75207BE52C6B44620057B0A9 /* MainMenu.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BE42C6B44620057B0A9 /* es */,
-			);
-			name = MainMenu.strings;
-			sourceTree = "<group>";
-		};
-		75207BE72C6B44620057B0A9 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BE62C6B44620057B0A9 /* Base */,
-			);
-			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
-		75207BED2C6B44620057B0A9 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BEC2C6B44620057B0A9 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		75207BEF2C6B44620057B0A9 /* Main.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BEE2C6B44620057B0A9 /* en */,
-			);
-			name = Main.strings;
-			sourceTree = "<group>";
-		};
-		75207BF12C6B44620057B0A9 /* Main.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BF02C6B44620057B0A9 /* es */,
-			);
-			name = Main.strings;
-			sourceTree = "<group>";
-		};
-		75207BF32C6B44620057B0A9 /* Sparky.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BF22C6B44620057B0A9 /* Base */,
-			);
-			name = Sparky.storyboard;
-			sourceTree = "<group>";
-		};
-		75207BF52C6B44620057B0A9 /* Sparky.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BF42C6B44620057B0A9 /* en */,
-			);
-			name = Sparky.strings;
-			sourceTree = "<group>";
-		};
-		75207BF72C6B44620057B0A9 /* Sparky.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				75207BF62C6B44620057B0A9 /* es */,
-			);
-			name = Sparky.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		75207C262C6B457A0057B0A9 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -828,8 +627,6 @@
 		75543B011F22A1E70050BAF2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
@@ -853,8 +650,6 @@
 		75543B021F22A1E70050BAF2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
@@ -1073,7 +868,6 @@
 		75F5A9161D1902C500A17804 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -1096,7 +890,6 @@
 		75F5A9171D1902C500A17804 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -1119,7 +912,6 @@
 		75F5A93B1D1A133A00A17804 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = E8G8ARB44Z;
 				INFOPLIST_FILE = Sources/Sparky/iOS/Info.plist;
@@ -1140,7 +932,6 @@
 		75F5A93C1D1A133A00A17804 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = E8G8ARB44Z;
 				INFOPLIST_FILE = Sources/Sparky/iOS/Info.plist;

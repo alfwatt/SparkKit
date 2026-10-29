@@ -1,21 +1,49 @@
-/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */
 import Foundation
 import QuartzCore
 import KitBridge
 #if SWIFT_PACKAGE
 import KitBridgeSwift
 #endif
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
-/// shows an ILGridData as rows of cells, shaded by their values in the value range, newest row at the bottom
+// MARK: Hints
+
+/// style hint, the size of each row in points, 0 stretches the rows to fill the view, square cells by default
+public let ILSparkGridRowSizeHint = "ILSparkGridRowSizeHint"
+
+/// style hint, the ILColor of the grid where there's no data, a neutral gray by default
+public let ILSparkGridEmptyColorHint = "ILSparkGridEmptyColorHint"
+
+/// ILSparkStyle hints for spark grids
+extension ILSparkStyle {
+    /// the size of each row, nil for square cells, 0 to stretch the rows to fill the view
+    public var gridRowSize: CGFloat? {
+        numberHint(ILSparkGridRowSizeHint).map { CGFloat($0.doubleValue) }
+    }
+
+    @objc public var gridEmptyColor: ILColor {
+        hints[ILSparkGridEmptyColorHint] as? ILColor ?? ILColor(white: 0.5, alpha: 0.15)
+    }
+}
+
+// MARK: -
+
+/// shows an ILGridData as a grid of cells, each blends from the style's background to its fill by its value in the value range,
+/// the newest row is at the edge the style's fill direction names, the top by default, from the left or right the rows are columns
+/// with the first value at the bottom, the cells are square unless the style sizes the rows
 @objc(ILSparkGrid)
 open class ILSparkGrid: ILSparkView, ILGridDataDelegate {
-    private let gridLayer = CALayer() // the grid data layer, a layer for each row
+    private let gridLayer = CALayer() // the empty grid, behind the rows
+    private var rowLayers: [CALayer] = [] // the rows shown, oldest first
 
     @objc open var grid: ILGridData? {
         didSet {
             grid?.delegate = self
             OperationQueue.main.addOperation { [weak self] in
-                self?.clearGrid()
                 self?.updateView()
             }
         }
@@ -23,123 +51,147 @@ open class ILSparkGrid: ILSparkView, ILGridDataDelegate {
 
     @objc open var valueRange = NSRange(location: 0, length: 0)
 
-    // MARK: - Computed Properties
+    // MARK: - Geometry
 
-    private var rowHeight: CGFloat {
-        let rows = CGFloat(grid?.rows ?? 0)
-        return frame.size.height > rows ? (frame.size.height / rows) : 1.0
-    }
+    private var direction: ILSparkFillDirection { style.edgeDirection(default: .fromTop) }
 
-    private var columnWidth: CGFloat {
+    /// the length of the rows, across the grid
+    private var acrossLength: CGFloat { direction.isHorizontal ? bounds.height : bounds.width }
+
+    /// the length the rows are stacked along
+    private var alongLength: CGFloat { direction.isHorizontal ? bounds.width : bounds.height }
+
+    /// the size of each row along the grid
+    private var rowSize: CGFloat {
         let columns = CGFloat(grid?.columns ?? 0)
-        return frame.size.width > columns ? (frame.size.width / columns) : 1.0
+        guard let size = style.gridRowSize else {
+            return columns > 0 ? max(acrossLength / columns, 1) : alongLength
+        }
+        return size > 0 ? size : alongLength / CGFloat(max(grid?.rows ?? 0, 1))
     }
 
-    private func rect(ofRow row: Int) -> CGRect {
-        CGRect(x: 0, y: frame.size.height - (rowHeight * CGFloat(row + 1)), width: frame.size.width, height: rowHeight).integral
+    /// the number of rows that fit in the view
+    private var visibleRows: Int {
+        Int((alongLength / rowSize).rounded(.up))
     }
 
-    /// a layer for the row, shaded by the values
-    private func layer(ofRow row: Int, in grid: ILGridData) -> CALayer {
+    /// the frame of the row, counted from the newest, its edges on whole points so the rows meet without seams
+    private func rect(ofRowFromNewest age: Int) -> CGRect {
+        let start = (rowSize * CGFloat(age)).rounded()
+        let offset = start
+        let size = (rowSize * CGFloat(age + 1)).rounded() - start
+        switch direction {
+        case .fromBottom: return CGRect(x: 0, y: bounds.height - offset - size, width: bounds.width, height: size)
+        case .fromLeft: return CGRect(x: offset, y: 0, width: size, height: bounds.height)
+        case .fromRight: return CGRect(x: bounds.width - offset - size, y: 0, width: size, height: bounds.height)
+        default: return CGRect(x: 0, y: offset, width: bounds.width, height: size) // from the top
+        }
+    }
+
+    // MARK: - Rows
+
+    private struct RGBA {
+        var red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat
+
+        init(_ color: ILColor?) {
+            let sRGB = CGColorSpace(name: CGColorSpace.sRGB)!
+            let components = color?.cgColor.converted(to: sRGB, intent: .defaultIntent, options: nil)?.components ?? []
+            if components.count >= 4 {
+                (red, green, blue, alpha) = (components[0], components[1], components[2], components[3])
+            }
+            else {
+                (red, green, blue, alpha) = (0, 0, 0, 0)
+            }
+        }
+    }
+
+    /// an image of the row's values, from the background to the fill color, along the row
+    private func image(of percents: [CGFloat]) -> CGImage? {
+        guard !percents.isEmpty else { return nil }
+        let low = RGBA(style.background), high = RGBA(style.fill)
+        let vertical = direction.isHorizontal // rows from the side are columns
+        var pixels = [UInt8](repeating: 0, count: percents.count * 4)
+        for (column, percent) in percents.enumerated() {
+            let value = min(max(percent, 0), 1)
+            let alpha = low.alpha + ((high.alpha - low.alpha) * value)
+            func premultiplied(_ from: CGFloat, _ to: CGFloat) -> UInt8 {
+                UInt8(min(max(((from * low.alpha) + (((to * high.alpha) - (from * low.alpha)) * value)) * 255, 0), 255).rounded())
+            }
+            let pixel = (vertical ? (percents.count - 1 - column) : column) * 4 // vertical rows have the first value at the bottom
+            pixels[pixel] = premultiplied(low.red, high.red)
+            pixels[pixel + 1] = premultiplied(low.green, high.green)
+            pixels[pixel + 2] = premultiplied(low.blue, high.blue)
+            pixels[pixel + 3] = UInt8((alpha * 255).rounded())
+        }
+        guard let provider = CGDataProvider(data: Data(pixels) as CFData) else { return nil }
+        return CGImage(width: vertical ? 1 : percents.count, height: vertical ? percents.count : 1, bitsPerComponent: 8, bitsPerPixel: 32,
+                       bytesPerRow: (vertical ? 1 : percents.count) * 4, space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                       bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
+                       provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+    }
+
+    private func rowLayer(_ rowData: Data, in grid: ILGridData) -> CALayer {
         let rowLayer = CALayer()
-        rowLayer.contents = grid.alphaBitmap(ofRow: row, with: valueRange)
+        rowLayer.contents = image(of: grid.percents(ofRowData: rowData, in: valueRange))
+        rowLayer.contentsGravity = .resize
         rowLayer.magnificationFilter = .nearest
-        rowLayer.backgroundColor = style.background?.cgColor
         return rowLayer
+    }
+
+    /// place the rows from the newest, without animating
+    private func layoutRows() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        for (age, rowLayer) in rowLayers.reversed().enumerated() {
+            rowLayer.frame = rect(ofRowFromNewest: age)
+        }
+        CATransaction.commit()
+    }
+
+    /// drop the oldest rows that no longer fit
+    private func dropHiddenRows() {
+        let hidden = rowLayers.count - visibleRows
+        if hidden > 0 {
+            rowLayers.prefix(hidden).forEach { $0.removeFromSuperlayer() }
+            rowLayers.removeFirst(hidden)
+        }
+    }
+
+    /// redraw the rows that fit from the grid
+    private func drawRows(_ grid: ILGridData) {
+        rowLayers.forEach { $0.removeFromSuperlayer() }
+        let rows = grid.rows
+        rowLayers = (max(rows - visibleRows, 0)..<rows).map { rowLayer(grid.data(atRow: $0), in: grid) }
+        rowLayers.forEach { gridLayer.addSublayer($0) }
+        layoutRows()
     }
 
     // MARK: - ILSparkView
 
     open override func initView() {
         super.initView()
-
         grid = nil
         style = ILSparkStyle.defaultStyle
-
-        sparkLayer.addSublayer(gridLayer)
-        gridLayer.frame = sparkLayer.bounds
-        gridLayer.contentsGravity = .resize
-    }
-
-    private func clearGrid() {
-        gridLayer.sublayers = nil
-        gridLayer.contents = nil
-    }
-
-    /// one shot, redraw the entire grid into the grid layer
-    private func drawGrid(_ grid: ILGridData) {
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(0) // TODO use the time between updates
-        #if DEBUG
-        let drawStart = Date.timeIntervalSinceReferenceDate
-        #endif
-        gridLayer.frame = sparkLayer.bounds
-        gridLayer.sublayers = nil // TODO retain existing layers and only draw new ones
-        gridLayer.backgroundColor = style.fill?.cgColor
-
-        for row in 0..<grid.rows {
-            let rowLayer = layer(ofRow: row, in: grid)
-            gridLayer.addSublayer(rowLayer)
-            rowLayer.frame = rect(ofRow: row)
-        }
-
-        #if DEBUG
-        let drawTime = Date.timeIntervalSinceReferenceDate - drawStart
-        if drawTime > (1.0 / 15) { // warn if we drop below 15 fps
-            NSLog("%@ [%lu x %lu] %lu tiles in %0.6fs", self, grid.columns, grid.rows, grid.columns * grid.rows, drawTime)
-        }
-        #endif
-        CATransaction.commit()
+        addContent(gridLayer)
+        gridLayer.masksToBounds = true
     }
 
     open override func updateView() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        gridLayer.frame = sparkLayer.bounds
+        gridLayer.backgroundColor = style.gridEmptyColor.cgColor
         if let grid, grid.rows > 0, grid.columns > 0 {
             errorString = nil
-            drawGrid(grid)
+            drawRows(grid)
         }
         else {
             errorString = style.l10Nbundle?.localizedString(forKey: "No Data", value: "No Data", table: nil) ?? "No Data"
-            clearGrid()
+            rowLayers.forEach { $0.removeFromSuperlayer() }
+            rowLayers = []
         }
-
+        CATransaction.commit()
         super.updateView()
-    }
-
-    // MARK: - ILGridDataDelegate
-
-    open func grid(_ grid: ILGridData, didSetData data: Data, atRow row: Int) {
-        // TODO update the grid layer
-    }
-
-    open func grid(_ grid: ILGridData, didAppendedData data: Data, asRow rowIndex: Int) {
-        OperationQueue.main.addOperation { [weak self] in
-            guard let self else { return }
-            let rowLayer = layer(ofRow: rowIndex, in: grid)
-
-            // move the existing rows down inside of an animation context, dropping the rows past the new one
-            CATransaction.begin()
-            var layerCount = gridLayer.sublayers?.count ?? 0
-            var layerIndex = 0
-            var oldLayers: [CALayer] = []
-            for existingLayer in gridLayer.sublayers ?? [] {
-                if layerCount > (rowIndex + 1) { // remove the layer
-                    oldLayers.append(existingLayer)
-                    layerCount -= 1
-                }
-                else { // move the layer into place
-                    layerIndex += 1
-                    existingLayer.frame = rect(ofRow: layerIndex)
-                }
-            }
-            oldLayers.forEach { $0.removeFromSuperlayer() }
-
-            // now add the new row
-            gridLayer.addSublayer(rowLayer)
-            rowLayer.frame = rect(ofRow: rowIndex)
-
-            CATransaction.commit()
-            updateLabelsAndBorder()
-        }
     }
 
     /// the labels and border, without redrawing the grid
@@ -147,7 +199,27 @@ open class ILSparkGrid: ILSparkView, ILGridDataDelegate {
         super.updateView()
     }
 
-    open func grid(_ grid: ILGridData, willTrimToRangeOfRows rows: NSRange) {
-        // TODO update the grid layer
+    // MARK: - ILGridDataDelegate
+
+    open func grid(_ grid: ILGridData, didAppendedData data: Data, asRow rowIndex: Int) {
+        let rowSize = grid.sizeOfRow
+        let slices = rowSize > 0 ? stride(from: 0, to: data.count, by: rowSize).map { data.subdata(in: $0..<min($0 + rowSize, data.count)) } : []
+        OperationQueue.main.addOperation { [weak self] in
+            guard let self, grid === self.grid else { return }
+            if rowLayers.isEmpty { // the first rows, show the grid
+                updateView()
+                return
+            }
+            for slice in slices {
+                let rowLayer = rowLayer(slice, in: grid)
+                gridLayer.addSublayer(rowLayer)
+                rowLayers.append(rowLayer)
+            }
+            dropHiddenRows()
+            layoutRows()
+            updateLabelsAndBorder()
+        }
     }
 }
+
+/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */

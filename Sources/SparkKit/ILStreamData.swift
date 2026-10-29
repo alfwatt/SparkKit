@@ -1,4 +1,3 @@
-/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */
 import Foundation
 
 /// streaming data interface for ILStreamView
@@ -37,3 +36,5 @@ open class ILStreamData: NSObject {
     @objc optional func stream(_ stream: ILStreamData, recievedData data: Data) // every stream.width
     @objc optional func streamWillClose(_ stream: ILStreamData) // close
 }
+
+/* Copyright © 2016-2026, Alf Watt (alf@istumbler.net) Avaliale under MIT Style license in README.md */
