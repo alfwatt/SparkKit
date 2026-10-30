@@ -41,6 +41,8 @@
 		75207C9B2C6B4C9D0057B0A9 /* ILSparkLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75207BC92C6B44620057B0A9 /* ILSparkLine.swift */; };
 		75207C9C2C6B4C9D0057B0A9 /* ILSparkStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75207BCB2C6B44620057B0A9 /* ILSparkStack.swift */; };
 		A20000020000000000000002 /* ILSparkStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000001 /* ILSparkStream.swift */; };
+		A20000040000000000000002 /* ILSparkCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000040000000000000001 /* ILSparkCurve.swift */; };
+		A20000030000000000000002 /* ILSparkPulsar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000001 /* ILSparkPulsar.swift */; };
 		753C13AE30548406008338B2 /* KitBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; };
 		753C13B53054841B008338B2 /* KitBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; };
 		753C13B63054841B008338B2 /* KitBridge.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 753C13AB30548401008338B2 /* KitBridge.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -168,6 +170,8 @@
 		75207BCA2C6B44620057B0A9 /* ILSparkMeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILSparkMeter.swift; sourceTree = "<group>"; };
 		75207BCB2C6B44620057B0A9 /* ILSparkStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILSparkStack.swift; sourceTree = "<group>"; };
 		A20000020000000000000001 /* ILSparkStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILSparkStream.swift; sourceTree = "<group>"; };
+		A20000040000000000000001 /* ILSparkCurve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILSparkCurve.swift; sourceTree = "<group>"; };
+		A20000030000000000000001 /* ILSparkPulsar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILSparkPulsar.swift; sourceTree = "<group>"; };
 		75207BCC2C6B44620057B0A9 /* ILSparkStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILSparkStyle.swift; sourceTree = "<group>"; };
 		75207BCD2C6B44620057B0A9 /* ILSparkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILSparkView.swift; sourceTree = "<group>"; };
 		75207BCE2C6B44620057B0A9 /* ILStreamData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILStreamData.swift; sourceTree = "<group>"; };
@@ -237,6 +241,8 @@
 				75207BCA2C6B44620057B0A9 /* ILSparkMeter.swift */,
 				75207BCB2C6B44620057B0A9 /* ILSparkStack.swift */,
 				A20000020000000000000001 /* ILSparkStream.swift */,
+				A20000040000000000000001 /* ILSparkCurve.swift */,
+				A20000030000000000000001 /* ILSparkPulsar.swift */,
 				75207BCC2C6B44620057B0A9 /* ILSparkStyle.swift */,
 				75207BCD2C6B44620057B0A9 /* ILSparkView.swift */,
 				75207BCE2C6B44620057B0A9 /* ILStreamData.swift */,
@@ -542,6 +548,8 @@
 				75207C9B2C6B4C9D0057B0A9 /* ILSparkLine.swift in Sources */,
 				75207C9C2C6B4C9D0057B0A9 /* ILSparkStack.swift in Sources */,
 				A20000020000000000000002 /* ILSparkStream.swift in Sources */,
+				A20000040000000000000002 /* ILSparkCurve.swift in Sources */,
+				A20000030000000000000002 /* ILSparkPulsar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

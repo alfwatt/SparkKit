@@ -109,6 +109,23 @@ A stream of records, each the same number of values of one type, e.g. the sample
 
 Records that arrive together are drawn once, and any number of views can show one stream.
 
+### ILSparkPulsar &amp; ILSparkCurve
+
+A pulsar plot, spectra drawn as smooth curves stacked up the view, the newest at the bottom, each hiding the ones behind it, like the
+cover of Unknown Pleasures. The values of each spectrum can be split into `segments`, drawn with gaps between them, with `spans` titled
+across the top and `marks` along the bottom. `ILSparkCurve` smooths the values with an FFT, `pointsPerValue` points for each value.
+
+    pulsar.maximumValue = 128
+    pulsar.segments = [0..<14, 14..<40] // e.g. two bands
+    pulsar.spans = [ILSparkPulsarSpan(title: "2.4 GHz", values: 0...13), ILSparkPulsarSpan(title: "5 GHz", values: 14...39)]
+    pulsar.append(spectrum) // or
+    pulsar.stream = stream // each record is a spectrum, scaled from the stream's value range to the maximum value
+
+The style's background is the plot, the older curves are in its stroke color and the newest in its fill, starting from
+`ILSparkPulsar.defaultPulsarStyle`, white on black with the newest in orange. The background should be opaque, it hides the curves behind
+each one. Older curves are kept in a bitmap which moves up a row for each new curve, so each redraw draws only the newest, and redraws are
+limited to `redrawInterval`.
+
 ### ILBucketData, ILGridData and ILStreamData
 
 The data sources tell their views when they change, from any thread, and the views redraw on the main queue.
@@ -127,7 +144,7 @@ and on the Mac styles them from a color well in the title bar.
 
     The MIT License (MIT)
 
-    Copyright © 2016-2024 Alf Watt
+    Copyright © 2016-2026 Alf Watt
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
