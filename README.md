@@ -62,7 +62,9 @@ Style definitions which can be re-used across multiple views. Provides a default
 
 ### ILSparkView
 
-Base class which manages borders and style information.
+Base class which manages borders and style information, the axis labels, and `spans`: titles across the top, each centered over a range
+of columns with a rule under it, e.g. the bands of a run of channels. Bars, grids and streams draw them when their columns run across the
+view, and the pulsar plot over its segments.
 
 ### ILSparkLine
 
@@ -117,7 +119,7 @@ across the top and `marks` along the bottom. `ILSparkCurve` smooths the values w
 
     pulsar.maximumValue = 128
     pulsar.segments = [0..<14, 14..<40] // e.g. two bands
-    pulsar.spans = [ILSparkPulsarSpan(title: "2.4 GHz", values: 0...13), ILSparkPulsarSpan(title: "5 GHz", values: 14...39)]
+    pulsar.spans = [ILSparkSpan(title: "2.4 GHz", values: 0...13), ILSparkSpan(title: "5 GHz", values: 14...39)]
     pulsar.append(spectrum) // or
     pulsar.stream = stream // each record is a spectrum, scaled from the stream's value range to the maximum value
 

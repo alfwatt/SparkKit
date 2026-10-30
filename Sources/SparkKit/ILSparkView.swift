@@ -12,6 +12,20 @@ import UIKit
 
 private let labelRadius: CGFloat = 6
 private let labelMargin: CGFloat = 9
+private let spanFontSize: CGFloat = 11
+private let spanHeight: CGFloat = 16
+
+/// a label across the top of a view, spanning the columns which hold its values, with a rule under it,
+/// e.g. the band of a run of channels
+public struct ILSparkSpan {
+    public let title: String
+    public let values: ClosedRange<Int>
+
+    public init(title: String, values: ClosedRange<Int>) {
+        self.title = title
+        self.values = values
+    }
+}
 
 /// the scale of the main screen, for text layers
 var ILMainScreenScale: CGFloat {
@@ -29,7 +43,8 @@ open class ILSparkView: ILView, ILViewLifecycle {
     private var borderStorage: CAShapeLayer? // the outline, over the content
     private var backgroundStorage: CAShapeLayer? // the background in the outline, behind the content
     private let labelLayer = CALayer()
-    private var labelsNeedUpdate = false
+    var labelsNeedUpdate = false
+    private var laidOutSpanColumns = 0
 
     // MARK: - Style
 
@@ -110,6 +125,12 @@ open class ILSparkView: ILView, ILViewLifecycle {
             }
         }
     }
+
+    /// titles across the top, each centered over its columns with a rule under it, drawn when the view has columns across it
+    open var spans: [ILSparkSpan] = [] { didSet { labelsNeedUpdate = true } }
+
+    /// the number of columns across the view which the spans' values index, 0 if the view has none and the spans aren't drawn
+    @objc open var spanColumns: Int { 0 }
 
     private func string(for value: Any, units: String?) -> String {
         guard let units else { return String(describing: value) }
@@ -199,6 +220,9 @@ open class ILSparkView: ILView, ILViewLifecycle {
         CATransaction.begin()
         CATransaction.setAnimationDuration(0.1) // TODO use the time between updates
 
+        if !spans.isEmpty, spanColumns != laidOutSpanColumns { // the columns under the spans changed
+            labelsNeedUpdate = true
+        }
         if labelsNeedUpdate {
             updateLabels()
             labelsNeedUpdate = false
@@ -253,6 +277,7 @@ open class ILSparkView: ILView, ILViewLifecycle {
         labelLayer.frame = bounds
         labelLayer.sublayers = nil
         labelLayer.zPosition = 1.0 // frontmost
+        laidOutSpanColumns = spanColumns
 
         if let errorString { // put it on a text layer in the middle
             let errorLayer = layer(forLabel: errorString)
@@ -260,6 +285,9 @@ open class ILSparkView: ILView, ILViewLifecycle {
             return
         }
 
+        if !spans.isEmpty {
+            layoutSpans(in: bounds)
+        }
         if let yAxisLabels {
             layoutYAxisLabels(yAxisLabels, in: bounds)
         }
@@ -317,6 +345,46 @@ open class ILSparkView: ILView, ILViewLifecycle {
                     }
                 }
             }
+        }
+    }
+
+    /// title each span across the top, centered over its columns, with a rule under the title spanning them,
+    /// the title is left out when it's wider than its columns
+    private func layoutSpans(in bounds: CGRect) {
+        let columns = laidOutSpanColumns
+        guard columns > 0 else { return }
+        let columnWidth = bounds.width / CGFloat(columns)
+        let color = style.fontColor ?? style.stroke ?? .gray
+        let font = ILFont.systemFont(ofSize: spanFontSize, weight: .medium)
+        for span in spans where !span.title.isEmpty {
+            let first = min(max(span.values.lowerBound, 0), columns - 1), last = min(max(span.values.upperBound, 0), columns - 1)
+            let minX = bounds.minX + columnWidth * CGFloat(first), maxX = bounds.minX + columnWidth * CGFloat(last + 1)
+            let textSize = (span.title as NSString).size(withAttributes: [.font: font])
+            if textSize.width < maxX - minX {
+                let title = CATextLayer()
+                title.string = span.title
+                title.font = font
+                title.fontSize = spanFontSize
+                title.foregroundColor = color.withAlphaComponent(0.8).cgColor
+                title.alignmentMode = .center
+                title.contentsScale = ILMainScreenScale
+                title.shadowColor = style.background?.cgColor // a halo, so the title reads over the content
+                title.shadowOpacity = style.background == nil ? 0 : 1
+                title.shadowRadius = 2
+                title.shadowOffset = .zero
+                title.frame = CGRect(x: (minX + maxX - ceil(textSize.width)) / 2, y: bounds.minY + 1,
+                                     width: ceil(textSize.width), height: ceil(textSize.height))
+                labelLayer.addSublayer(title)
+            }
+            let rule = CGMutablePath()
+            let ruleY = bounds.minY + spanHeight - 1.5
+            rule.move(to: CGPoint(x: minX + 2, y: ruleY))
+            rule.addLine(to: CGPoint(x: maxX - 2, y: ruleY))
+            let ruleLayer = CAShapeLayer()
+            ruleLayer.path = rule
+            ruleLayer.strokeColor = color.withAlphaComponent(0.3).cgColor
+            ruleLayer.lineWidth = 1
+            labelLayer.addSublayer(ruleLayer)
         }
     }
 

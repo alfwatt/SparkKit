@@ -320,6 +320,11 @@ open class ILSparkGrid: ILSparkView, ILGridDataDelegate {
 
     @objc open var valueRange = NSRange(location: 0, length: 0)
 
+    /// the grid's columns, when they run across the view
+    open override var spanColumns: Int {
+        style.edgeDirection(default: .fromTop).isHorizontal ? 0 : (grid?.columns ?? 0)
+    }
+
     // MARK: - ILSparkView
 
     open override func initView() {

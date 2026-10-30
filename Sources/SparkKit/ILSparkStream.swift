@@ -47,6 +47,12 @@ open class ILSparkStream: ILSparkView, ILStreamDataDelegate {
     /// the space between the bars, in points
     @objc open var barGap: CGFloat = 0
 
+    /// the stream's columns, when they run across the view
+    open override var spanColumns: Int {
+        let direction = style.edgeDirection(default: style.streamStyle == .gridStyle ? .fromTop : .fromBottom)
+        return direction.isHorizontal ? 0 : (stream?.columns ?? 0)
+    }
+
     /// a line through the values, between 0 and 1, rising from the edge the style names, the bottom by default,
     /// from the left or right the values run up the view
     static func lineLayer(_ values: [CGFloat], size viewSize: CGSize, style: ILSparkStyle) -> CALayer {

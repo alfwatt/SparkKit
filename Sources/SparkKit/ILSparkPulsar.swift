@@ -10,17 +10,6 @@ import AppKit
 import UIKit
 #endif
 
-/// a label across the top of a pulsar plot, spanning the segments which hold its values
-public struct ILSparkPulsarSpan {
-    public let title: String
-    public let values: ClosedRange<Int>
-
-    public init(title: String, values: ClosedRange<Int>) {
-        self.title = title
-        self.values = values
-    }
-}
-
 /// a label along the bottom of a pulsar plot, at a value index, which can be between values
 public struct ILSparkPulsarMark {
     public let title: String
@@ -100,8 +89,8 @@ open class ILSparkPulsar: ILSparkView, ILStreamDataDelegate {
         didSet { invalidate() }
     }
 
-    /// labels across the top
-    public var spans: [ILSparkPulsarSpan] = [] {
+    /// labels across the top, over the segments which hold their values, drawn with the plot
+    open override var spans: [ILSparkSpan] {
         didSet { redisplay() }
     }
 

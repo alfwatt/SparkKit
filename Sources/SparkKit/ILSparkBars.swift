@@ -15,6 +15,11 @@ open class ILSparkBars: ILSparkView, ILBucketDataDelegate {
     /// the space between the bars, in points, each bar is narrower by the gap, defaults to 0
     @objc open var barGap: CGFloat = 0
 
+    /// the buckets, when the bars stand across the view
+    open override var spanColumns: Int {
+        style.edgeDirection(default: .fromBottom).isHorizontal ? 0 : (dataSource?.buckets.count ?? 0)
+    }
+
     // MARK: - ILSparkView
 
     open override func initView() {
